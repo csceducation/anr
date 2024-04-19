@@ -10,7 +10,6 @@ from .models import Staff
 from django.utils.decorators import method_decorator
 from apps.corecode.views import staff_student_entry_restricted,different_user_restricted
 from apps.corecode.models import User
-from apps.attendance.views import provide_staff_summary
 
 class StaffListView(ListView):
     model = Staff

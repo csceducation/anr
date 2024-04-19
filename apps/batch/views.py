@@ -11,7 +11,6 @@ from apps.course.models import *
 from apps.students.models import Classmodel
 from django.utils import timezone
 from apps.corecode.models import Time
-from apps.attendance.views import provide_batch_summary
 
 
 def BatchListView(request):
