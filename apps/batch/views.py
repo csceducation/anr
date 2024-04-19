@@ -36,34 +36,6 @@ class BatchDetailView(DetailView):
     context_object_name = 'batch'
     def get_context_data(self, **kwargs):
         context = super(BatchDetailView, self).get_context_data(**kwargs)
-        obj = self.get_object()
-        batch_summary = provide_batch_summary(obj)
-        
-        lab_students = batch_summary['lab_students_per_date']
-        theory_students = batch_summary['theory_students_per_date']
-        
-        # Calculate the total strength (assuming it's constant for all rows)
-        total_strength = obj.batch_students.count()  # Change this to your actual total strength
-        
-        context['data'] = {
-            'lab_students_per_date': lab_students,
-            'theory_students_per_date': theory_students,
-            'total_strength': total_strength,
-        }
-        table_data = []
-
-        for date, lab_presentees in context['data']['lab_students_per_date'].items():
-            theory_presentees = context['data']['theory_students_per_date'].get(date, 'N/A')
-            total_students = context['data']['total_strength']
-            table_data.append({
-                'date': date,
-                'total_students': total_students,
-                'lab_presentees': lab_presentees,
-                'theory_presentees': theory_presentees,
-            })
-        #print(table_data)
-        context['table_data'] = table_data
-        #print(context)
         return context
 class AddStudentView(View):
     template_name = 'batch/add_student.html'

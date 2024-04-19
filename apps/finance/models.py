@@ -71,18 +71,6 @@ class Receipt(models.Model):
     def __str__(self):
         return f"Receipt on {self.date_paid}"
     
-    def save(self,due,date,*args,**kwargs):
-        if due == None:
-            self.save()
-        else:
-            dues = Due.objects.get(id=due)
-            dues_list = dues.dues
-            for item in dues_list:
-                if item['date'] == date:
-                    item['status'] = "paid"
-            dues.dues = dues_list
-            dues.save()
-            super().save(*args, **kwargs)
-
+    
 
 

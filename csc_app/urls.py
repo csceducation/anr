@@ -36,7 +36,7 @@ urlpatterns = [
     path("revenue/", include("apps.revenue.urls")),
     path("course/", include("apps.course.urls")),
     path("batches/",include("apps.batch.urls")),
-    path("attendance/",include("apps.attendance.urls")),
+    path("attendance/",include("apps.attendancev2.urls")),
     path('logout/',logout_view, name='logout'),
     path('enquiryform',StudentEnquiryFormCreateView.as_view(),name='enquiryform')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
