@@ -7,7 +7,7 @@ import certifi
 
 class DashboardManager:
     def __init__(self, mongodb_database):
-        self.client = pymongo.MongoClient('mongodb://172.18.208.1:27017/',tlsCAFile=certifi.where(),connect=False)
+        self.client = pymongo.MongoClient('mongodb://172.18.208.1:27017/',tlsCAFile=certifi.where(),connect=False,connectTimeoutMS=30000, socketTimeoutMS=30000)
         self.db = self.client[mongodb_database]
         self.staff_collection = self.db["staff_collection"]
         self.student_collection = self.db["student_collection"]
