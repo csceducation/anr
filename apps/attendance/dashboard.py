@@ -7,7 +7,18 @@ import certifi
 
 class DashboardManager:
     def __init__(self, mongodb_database):
-        self.client = pymongo.MongoClient("mongodb+srv://cscadmin:cscadmin@cluster0.qnliedz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+        try:
+            self.client = pymongo.MongoClient('mongodb+srv://cscadmin:cscadmin@cluster0.qnliedz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&replicaSet=atlas-9jmma8c-shard-0',
+                                                tls=True,
+                                                tlsCAFile=certifi.where(),
+                                                connect=False,
+                                                connectTimeoutMS=60000,
+                                                socketTimeoutMS=60000)
+
+        except pymongo.errors.ServerSelectionTimeoutError as err:
+            print("Server Selection Timeout Error:", err)
+            for server in err.errors:
+                print("Server Description:", server.server_description)
         self.db = self.client[mongodb_database]
         self.staff_collection = self.db["staff_collection"]
         self.student_collection = self.db["student_collection"]
