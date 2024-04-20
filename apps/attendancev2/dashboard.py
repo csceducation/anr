@@ -24,6 +24,7 @@ class DashboardManager:
                 'date': date,
                 'attendance': {'$exists': True, '$ne': {}}
             })
+            #print(staff_attendance)
             if staff_attendance:
                 present_staff = {k: v for k, v in staff_attendance.get('attendance', {}).items() if v.get('entry_time') and v.get('exit_time')}
                 attendance_count = len(present_staff)

@@ -1,6 +1,6 @@
 from django.db import models
 from .manager import AttendanceManager
-
+from datetime import datetime
 
 class LabSystemModel(models.Model):
     lab_no = models.CharField(max_length=200,blank=True, null=True)
@@ -33,6 +33,12 @@ class LabSystemModel(models.Model):
         result = {}
         for system in self.get_systems():
             result[system] = manager.get_lab_data(self.id,system,date)
+            #print(result[system])
+            if result[system] != None:
+                result[system].pop("_id",'')
+            if result[system] == None:
+                result[system] = {'date': date, 'lab_no': self.id, 'system_no': system, 'data': {'not available': {'start': '00:00', 'stop': '01:00'}}}
             
         return result
+
     

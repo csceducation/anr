@@ -89,11 +89,14 @@
             {% endfor %}
         </tbody>
     </table>
-
+{{students_data}}
+{{staffs_data}}
 <!-- JavaScript to render the charts -->
 <script>
     var staffGraphJSON = {{ staff_graphJSON|safe }};
     var studentGraphJSON = {{ student_graphJSON|safe }};
+    console.log(staffGraphJSON)
+    console.log(studentGraphJSON)
 
     // Render Staff Chart
     Plotly.newPlot('staffChart', staffGraphJSON);

@@ -1,5 +1,5 @@
 import pymongo
-
+import datetime
 class AttendanceManager:
     def __init__(self,mongodb_database):
         self.db_name = mongodb_database
@@ -107,6 +107,50 @@ class AttendanceManager:
     def get_theory_data(self,batch,date):
         doc = self.theory_collection.find_one({"batch_id":batch,"date":date})
         return doc
+
+
+    def get_student_lab_data(self, student_id, week=None):
+        if week is None:
+            # Default to the current week
+            today = datetime.datetime.now()
+            year, week_number = today.strftime("%Y-%W").split("-")
+        else:
+            year, week_number = week.split("-W")
+            year = int(year)
+            week_number = int(week_number)
+
+        # Calculate the start and end dates of the week
+        start_of_week = datetime.datetime.strptime(f"{year}-{week_number}-1", "%Y-%W-%w")
+        end_of_week = start_of_week + datetime.timedelta(days=6)
+
+        week_query = {
+            "date": {
+                "$gte": start_of_week.strftime("%Y-%m-%d"),
+                "$lte": end_of_week.strftime("%Y-%m-%d")
+            }
+        }
+
+        # Define the pipeline
+        pipeline = [
+            {"$match": {"data." + str(student_id): {"$exists": True}}},
+            {"$match": week_query}
+        ]
+
+        # Aggregate using pipeline
+        week_documents = list(self.lab_collection.aggregate(pipeline))
+
+        formatted_data = []
+        for doc in week_documents:
+            formatted_doc = {
+                "date": doc["date"],
+                "lab_no": doc["lab_no"],
+                "system_no": doc["system_no"],
+                "start_time": doc["data"][student_id]["start"],
+                "end_time": doc["data"][student_id]["stop"]
+            }
+            formatted_data.append(formatted_doc)
+
+        return formatted_data
 
 
 

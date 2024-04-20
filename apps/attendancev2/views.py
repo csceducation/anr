@@ -360,3 +360,35 @@ def provide_staff_summary(staff,month,year):
     data = manager.get_staff_summary(staff,month,year)
     #print(data)
     return data
+
+
+def lab_dashboard(request,lab_id):
+    date = request.GET.get("date")
+    if date == None:
+        date = datetime.today()
+        
+    lab = LabSystemModel.objects.get(id=lab_id)
+    systems = lab.get_systems()
+    data = lab.get_attendance_data(date)
+    time_slots = [f'{h:02d}:{m:02d}' for h in range(0, 24) for m in (0, 30)]
+
+    students = Student.objects.filter(current_status="active")
+    students_id = [{"id": student.enrol_no, "name": student.student_name} for student in students]
+    context = {
+        "system_data_dict": data, 
+        "students": students_id, 
+        "systems": systems,
+        "lab_no":lab_id,
+        "date":date,
+        'time_slots': time_slots,
+    }
+    student_id = request.GET.get('student_id')
+    week = request.GET.get('week')
+    if student_id != None and week != None:
+        student = Student.objects.get(enrol_no=student_id)
+        manager = AttendanceManager(db)
+        context["student_data"] = manager.get_student_lab_data(str(student.enrol_no),week)
+        return render(request,"lab_dashboard.html",context) 
+        
+        
+    return render(request,"lab_dashboard.html",context) 

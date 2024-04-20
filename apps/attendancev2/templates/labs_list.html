@@ -27,6 +27,7 @@
               <th>Details link</th>
               <th>Delete link</th>
               <th>Go to attendance Page</th>
+              <th>Visit Dashboard</th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +40,9 @@
                 <td><a href="{% url 'delete_lab' lab.id %}" class="btn btn-danger">delete</a></td>
                 <td>
                   <a href="{% url 'add_lab_attendance' lab.id %}" class="btn btn-light">Manage Attendance</a>
+                </td>
+                <td>
+                  <a href="{% url 'lab_dashboard' lab.id %}" class="btn btn-light">Go to Dashboard</a>
                 </td>
               </tr>
             {% endfor %}
