@@ -21,6 +21,8 @@ class BatchModel(models.Model):
     def total_student(self):
         return self.batch_students.count()
 
+    def get_batch_name(self):
+        return str(self.batch_id) + str(self.batch_course)
     def get_absolute_url(self):
         return reverse("batch_detail", kwargs={"pk": self.pk})
     

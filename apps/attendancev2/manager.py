@@ -151,6 +151,38 @@ class AttendanceManager:
             formatted_data.append(formatted_doc)
 
         return formatted_data
+    
+    def get_theory_dashboard(self,batch_id):
+        # Fetch documents from MongoDB
+        documents = self.theory_collection.find({"batch_id": batch_id})
+        print(documents)
+        # Initialize dictionary to store data
+        batch_data = {}
+
+        # Process fetched documents
+        for doc in documents:
+            date = doc["date"]
+            content = doc['content']
+            total_count = len(doc["students"])
+            total_present = list(doc["students"].values()).count("present")
+            total_absent = total_count - total_present
+
+            # Update batch data for the current date
+            if date in batch_data:
+                batch_data[date]["total_count"] += total_count
+                batch_data[date]["total_present"] += total_present
+                batch_data[date]["total_absent"] += total_absent
+            else:
+                batch_data[date] = {
+                    "batch_id":batch_id,
+                    "content":content,
+                    "total_count": total_count,
+                    "total_present": total_present,
+                    "total_absent": total_absent
+                }
+
+        return batch_data
+        
 
 
 

@@ -17,4 +17,5 @@ urlpatterns = [
     path("delete_student_attendance/<str:date>/<int:student_id>/",delete_student_attendance,name="delete_student_attendance"),
     path('select/feature',router,name="router"),
     path('lab_dashboard/<int:lab_id>/',lab_dashboard,name="lab_dashboard"),
+    path('theory_dashboard/',theory_dashboard,name="theory_dashboard"),
 ]

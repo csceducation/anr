@@ -392,3 +392,48 @@ def lab_dashboard(request,lab_id):
         
         
     return render(request,"lab_dashboard.html",context) 
+
+def theory_dashboard(request):
+    staff_id = request.GET.get("staff_id")
+    staffs = Staff.objects.all()
+    staff_list = [{"id":s.id,"name":s.username} for s in staffs]
+    if not staff_id:
+        return render(request,'theory_dashboard_form.html',{'staff_list':staff_list})
+    batch_id = request.GET.get("batch_id")
+    date = request.GET.get("date")
+    staff = Staff.objects.get(id=int(staff_id))
+    
+    staff_list = [{"id":s.id,"name":s.username} for s in staffs]
+    batches = BatchModel.objects.filter(batch_staff = staff)
+    manager = AttendanceManager(db)
+    result = {}
+    for batch in batches:
+        data = manager.get_theory_dashboard(batch.id)
+        result[batch.get_batch_name()] = data
+    all_batches = BatchModel.objects.all()
+    batch_list = [{"id":b.id,'name':b.get_batch_name()} for b in batches]
+    context = {
+        "data_for_staff":result,
+        "staff_list":staff_list,
+        "batch_list":batch_list
+    }
+    if batch_id and date:
+        
+        doc = manager.get_theory_data(int(batch_id),date)
+        if doc :
+            doc.pop('_id', None)
+            students = doc.get('students', {})
+            mapped_students = {student_id: {'name': map_name(student_id), 'status': status} for student_id, status in students.items()}
+            doc['students'] = mapped_students
+
+            context['specific_date'] = doc
+        
+    return render(request,"theory_dashboard.html",context)
+    
+
+def map_name(enrol_no):
+    try:
+        student = Student.objects.get(enrol_no=enrol_no)
+        return student.student_name
+    except:
+        return "unknown"
