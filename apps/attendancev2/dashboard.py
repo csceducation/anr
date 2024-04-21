@@ -11,6 +11,7 @@ class DashboardManager:
         self.db = self.client[mongodb_database]
         self.staff_collection = self.db["staff_collection"]
         self.student_collection = self.db["student_collection"]
+        self.theory_collection = self.db['theory_collection']
 
     def __del__(self):
         self.client.close()
@@ -93,4 +94,24 @@ class DashboardManager:
             return staffs_data
         else:
             return []
+        
+        
+    def get_public_attendance(self,student_id,batch_id):
+        
+        docs = self.theory_collection.find({"batch_id":batch_id})
+        #print(docs)
+        result = []
+        for doc in docs:
+            #print(doc)
+            result.append(format_document(student_id,doc))
+        
+        return result
 
+def format_document(student_id,doc):
+    formatted_doc = {
+        'date': doc['date'],
+        'content': doc['content'],
+        'time_string': f"{doc['entry_time']} - {doc['exit_time']}",
+        'student_status': doc['students'].get(str(student_id), 'not found')
+    }
+    return formatted_doc

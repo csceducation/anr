@@ -568,75 +568,37 @@ p{
                 </div>
             </div>
  -->
+ <!--modify here-->
+ 
 <h2 align=center>Attendance</h2>
-{% for batch_id, batch_data in data.items %}
 <div class="att" style="border:2px solid green;padding:20px;margin-top:5%;">
-
+    {% for batch_name, activities in data.items %}
+    <div class="att" style="border:2px solid green;padding:20px;margin-top:5%;">
+        <h2>{{ batch_name }}</h2>
+        <p>Staff: {{ activities.pop }}</p>
     
-    <section class="batch">
-        <div class="batch-info">
-            <h2>Batch {{ batch_data.batch_info.batch_id }} - {{ batch_data.batch_info.batch_subject }}</h2>
-            <p>Staff: {{ batch_data.batch_info.batch_staff}}</p>
-        </div>
-
-        <div class="activities">
-            <!-- Lab Section -->
-            <div class="exam timetable">
-            <h3>Lab Activities</h3>
-            
-            <table >
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Entry Time</th>
-                        <th>Exit Time</th>
-                        <th>System No</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for activity in batch_data.lab %}
-                    <tr>
-                        <td>{{ activity.date }}</td>
-                        <td>{{ activity.entry_time }}</td>
-                        <td>{{ activity.exit_time }}</td>
-                        <td>{{ activity.system_no }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </div>
-    
-            <!-- Theory Section -->
-<div class="exam timetable">
-            <h3>Theory Sessions</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Content</th>
-                        <th>Entry Time</th>
-                        <th>Exit Time</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for session in batch_data.theory %}
-                    <tr>
-                        <td>{{ session.date }}</td>
-                        <td>{{ session.content }}</td>
-                        <td>{{ session.entry_time }}</td>
-                        <td>{{ session.exit_time }}</td>
-                        <td>{{ session.status }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-</div>
-        </div>
-    </section>
-
-</div>
+        <table style="width:100%">
+            <tr>
+                <th>Date</th>
+                <th>Content</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+            {% for activity in activities %}
+                {% if 'staff' not in activity %}
+                <tr>
+                    <td>{{ activity.date }}</td>
+                    <td>{{ activity.content }}</td>
+                    <td>{{ activity.time_string }}</td>
+                    <td>{{ activity.student_status }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
     {% endfor %}
+    <!--modify above-->
+</div>
 </main>
 
         <!-- <div class="right">
