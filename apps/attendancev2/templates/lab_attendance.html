@@ -102,14 +102,17 @@
                 {% for system_, data in system_data_dict.items %}
                     {% if system_ == system and data is not None %}
                         {% for student_id, time_data in data.data.items %}
+                        {% if student_id != "not available" %}
                             <tr>
                                 <td>{{ student_id }}</td>
                                 <td>{{ time_data.start }}</td>
                                 <td>{{ time_data.stop }}</td>
                                 <td>
-                                    <a href ="{% url 'data_delete' student_id lab_no date system %}" class="btn btn-danger btn-sm">Delete</a>
+                                    <a href ="{% url 'data_delete' student_id=student_id lab_id=lab_no date=date system_no=system_ %}" class="btn btn-danger btn-sm">Delete</a>
+                                    {% comment %}<a href ="{% url 'data_delete' student_id=student_id lab_id=lab_no date=date system_no=system_ %}" class="btn btn-danger btn-sm">Delete</a>{% endcomment %}
                                 </td>
                             </tr>
+                            {% endif %}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
