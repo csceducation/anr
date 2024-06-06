@@ -437,3 +437,10 @@ def map_name(enrol_no):
         return student.student_name
     except:
         return "unknown"
+    
+    
+def profile_redirector(request,**kwargs):
+    enrol_no = kwargs.get("enrol_no")
+    
+    student = Student.objects.get(enrol_no=enrol_no)
+    return redirect('public_student_profile',student.id)

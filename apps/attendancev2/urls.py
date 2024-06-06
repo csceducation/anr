@@ -18,4 +18,5 @@ urlpatterns = [
     path('select/feature',router,name="router"),
     path('lab_dashboard/<int:lab_id>/',lab_dashboard,name="lab_dashboard"),
     path('theory_dashboard/',theory_dashboard,name="theory_dashboard"),
+    path("profile_redirector/<int:enrol_no>/",profile_redirector,name="profile_redirector")
 ]
