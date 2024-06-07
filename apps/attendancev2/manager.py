@@ -145,8 +145,8 @@ class AttendanceManager:
                 "date": doc["date"],
                 "lab_no": doc["lab_no"],
                 "system_no": doc["system_no"],
-                "start_time": doc["data"][student_id]["start"],
-                "end_time": doc["data"][student_id]["stop"]
+                "start_time": doc["data"][str(student_id)]["start"],
+                "end_time": doc["data"][str(student_id)]["stop"]
             }
             formatted_data.append(formatted_doc)
 
@@ -182,6 +182,31 @@ class AttendanceManager:
                 }
 
         return batch_data
+    
+    """here the student id is students enroll number it suits for all documents wedont use model id in documents"""
+    def get_public_student_lab_data(self, student_id):
+
+
+        # Define the pipeline
+        pipeline = [
+            {"$match": {"data." + str(student_id): {"$exists": True}}},
+            {"$sort":{"date":1}}
+        ]
+
+        # Aggregate using pipeline
+        week_documents = list(self.lab_collection.aggregate(pipeline))
+        formatted_data = []
+        for doc in week_documents:
+            formatted_doc = {
+                "date": doc["date"],
+                "lab_no": doc["lab_no"],
+                "system_no": doc["system_no"],
+                "start_time": doc["data"][str(student_id)]["start"],
+                "end_time": doc["data"][str(student_id)]["stop"]
+            }
+            formatted_data.append(formatted_doc)
+        print(formatted_data)
+        return formatted_data
         
 
 

@@ -37,6 +37,7 @@ from apps.corecode.views import student_entry_resricted,staff_student_entry_rest
 from django.contrib.auth.decorators import login_required
 from apps.batch.models import BatchModel
 from apps.attendancev2.dashboard import DashboardManager
+from apps.attendancev2.manager import AttendanceManager
 
 def generate_student_id_card(request,student_id):
         # Create a blank image
@@ -603,10 +604,13 @@ def attendance_test(request,**kwargs):
     student = Student.objects.get(id=student_id)
     batches = BatchModel.objects.filter(batch_students__id=student.id)
     manager = DashboardManager('anr_collections')
+    lab_manager = AttendanceManager("anr_collections")
+    lab_data = lab_manager.get_public_student_lab_data(student.enrol_no)
     data = {}
     for batch in batches:
         x = manager.get_public_attendance(student.enrol_no,batch.id)
         x.append(batch.batch_staff.username)
         data[str(batch.batch_course)+"("+str(batch.batch_id)+")"] = x
-    print(data)
-    return render(request, 'public/student_attendance.html', {'data':data,'object':student})
+    #print(data)
+    
+    return render(request, 'public/student_attendance.html', {'data':data,'object':student,"lab_data":lab_data})
