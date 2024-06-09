@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import pymysql
+import django_heroku
 
 pymysql.version_info = (1,4,6,'final',0)
 pymysql.install_as_MySQLdb()
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -203,7 +205,9 @@ SESSION_COOKIE_AGE = 10800
 #    },
 #}
 #
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Site Default values
 AUTH_USER_MODEL = 'corecode.User'
+django_heroku.settings(locals())

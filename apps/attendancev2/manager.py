@@ -3,7 +3,7 @@ import datetime
 class AttendanceManager:
     def __init__(self,mongodb_database):
         self.db_name = mongodb_database
-        self.client = pymongo.MongoClient("mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.0")
+        self.client = pymongo.MongoClient("mongodb+srv://cscadmin:cscadmin@cluster0.bu8ylvz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
         self.db = self.client[self.db_name]
         self.staff_collection = self.db['staff_collection']
         self.student_collection = self.db['student_collection']
