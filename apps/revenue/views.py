@@ -5,7 +5,11 @@ from django.shortcuts import render
 
 from ..finance import models as finmod
 from ..students import models as stumod
+from apps.finance.models import Due
 
+def get_deadline_due():
+    dues = Due.objects.filter(due_date=datetime.date.today())
+    return dues
 
 def total_student():
     total_stud = stumod.Student.objects.count()

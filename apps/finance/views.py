@@ -1,20 +1,19 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import widgets
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from apps.staffs.models import Staff
 from django.contrib import messages
-
-
+from django.http import JsonResponse
 from apps.students.models import Student
 
 from .forms import InvoiceItemFormset, InvoiceReceiptFormSet, Invoices
-from .models import Invoice, InvoiceItem, Receipt
+from .models import Invoice, InvoiceItem, Receipt, Due
 
-
+from apps.corecode.views import staff_student_entry_restricted
 class InvoiceListView(LoginRequiredMixin, ListView):
     model = Invoice
 
@@ -54,22 +53,52 @@ def save_bill_details(request):
         amount = request.POST.get('amount')
         re_by = request.POST.get('recived_by')
         comment = request.POST.get('comment')
-        
+        due_id = request.POST.get('due_id')
+        next_due = request.POST.get('next_due_date')
+        next_due_amount = request.POST.get('next_amount')
+        if next_due_amount:
+            next_due_amount = int(next_due_amount)
+        if due_id:
+            print("due id",due_id)   
+        else:
+            print("not found")
+        print("staff id gotten: ",re_by)
         try:
             staff = Staff.objects.get(id=re_by)
         except Staff.DoesNotExist:
             messages.error(request, 'Error: Staff ID not found.')
             return redirect('bill')
-
-        # Perform any necessary validation and save to the database
-        if due == None:
-            Receipt.objects.create(Bill_No=bill_number,invoice=Invoice.objects.get(student=student), amount_paid=amount,date_paid=bill_date, comment=comment,received_by=Staff.objects.get(id=re_by))
+        print("due date from view: ",next_due)
+        invoice = Invoice.objects.get(student=student)
+        if due is None:
+            receipt = Receipt(
+                Bill_No=bill_number,
+                invoice=invoice,
+                amount_paid=amount,
+                date_paid=bill_date,
+                comment=comment,
+                received_by=staff
+            )
         else:
-            Receipt.objects.create(Bill_No=bill_number,invoice=Invoice.objects.get(student=student), amount_paid=amount,date_paid=bill_date, comment=comment,received_by=Staff.objects.get(id=re_by),due=due)
-        # Redirect to a success page or wherever you'd like
+            receipt = Receipt(
+                Bill_No=bill_number,
+                invoice=invoice,
+                amount_paid=amount,
+                date_paid=bill_date,
+                comment=comment,
+                received_by=staff,
+                due=due
+            )
+
+        # Pass the extra arguments through the save method
+        receipt.save(next_due_date=next_due, next_due_amount=next_due_amount)
+        
+       
+       
         return redirect('bill')
 
-    return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt})
+    
+    return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"Due":Due})
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):
     model = Invoice
@@ -152,3 +181,37 @@ def bulk_invoice(request):
 
 
 
+def get_student_dues(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    dues = Due.dues_for_student(student)
+    invoice = Invoice.objects.get(student=student)
+    if dues:
+        dues_list = [{'amount': due.amount, 'due_date': due.due_date, 'id':due.id, "total_amount":due.invoice.total_amount_payable(),"balance":due.invoice.balance(),"paid":due.invoice.total_amount_paid()} for due in dues]
+    else:
+        dues_list = [{"total_amount":invoice.total_amount_payable(),"balance":invoice.balance(),"paid":invoice.total_amount_paid()}]
+    return JsonResponse(dues_list, safe=False)
+
+
+
+
+def dues_list(request):
+    if request.method == "POST":
+        dues = Due.objects.filter(invoice__student__student_name__icontains = request.POST.get("student_name"))
+        return render(request,"finance/dues.html",{"dues":dues})
+    dues = Due.objects.all()
+    return render(request,"finance/dues.html",{"dues":dues})
+    
+
+
+def delete_due(request,**kwargs):
+    pk = kwargs.get("pk")
+    Due.objects.get(id=pk).delete()
+    return redirect("due_dashboard")
+
+def extend_due(request,**kwargs):
+    if request.method == "POST":
+        pk = kwargs.get("pk")
+        date_to_extend = request.POST.get("new_due_date")
+        due = Due.objects.get(id=pk)
+        due.extend_due(date_to_extend)
+        return redirect("due_dashboard")

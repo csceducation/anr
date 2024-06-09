@@ -5,15 +5,16 @@ from apps.staffs.models import Staff
 from apps.corecode.models import AcademicSession, AcademicTerm, StudentClass
 from apps.students.models import Student
 import json
+from datetime import date
 
 class Invoice(models.Model):
-    total_num = 0
-    student = models.ForeignKey(Student, on_delete=models.CASCADE,default=None)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, default=None)
     status = models.CharField(
         max_length=20,
         choices=[("active", "Active"), ("closed", "Closed")],
         default="active",
     )
+    _past_dues = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["student"]
@@ -22,30 +23,74 @@ class Invoice(models.Model):
         return f"{self.student}"
 
     def balance(self):
-        payable = self.total_amount_payable()
-        paid = self.total_amount_paid()
-        return payable - paid
+        return self.total_amount_payable() - self.total_amount_paid()
 
     def amount_payable(self):
-        items = InvoiceItem.objects.filter(invoice=self)
-        total = 0
-        for item in items:
-            total += item.amount
-        return total
+        return sum(item.amount for item in InvoiceItem.objects.filter(invoice=self))
 
     def total_amount_payable(self):
-        return  self.amount_payable()
+        return self.amount_payable()
 
     def total_amount_paid(self):
-        receipts = Receipt.objects.filter(invoice=self)
-        amount = 0
-        for receipt in receipts:
-            amount += receipt.amount_paid
-        return amount
+        return sum(receipt.amount_paid for receipt in Receipt.objects.filter(invoice=self))
 
     def get_absolute_url(self):
         return reverse("invoice-detail", kwargs={"pk": self.pk})
 
+    def add_past_due(self, due):
+        past_dues = self._past_dues
+        if isinstance(past_dues, str):
+            past_dues = json.loads(past_dues)
+        
+        past_due_dict = {
+            'id': due.id,
+            'amount': str(due.amount),
+            'due_date': str(due.due_date) if isinstance(due.due_date, date) else due.due_date
+        }
+        past_dues.append(past_due_dict)
+        self._past_dues = past_dues
+        self.save()
+
+    @property
+    def get_past_dues(self):
+        return self._past_dues
+    
+    def update_dues(self):
+        total_due_amount = sum(due.amount for due in self.dues.all())
+        if self.balance() <= 0:
+            for due in self.dues.all():
+                due.delete()
+        self.save()
+
+    def update_dues_based_on_receipt(self, receipt_amount,due_date=None,next_due_amount=None):
+        dues = self.dues.all().order_by('due_date')
+
+        remaining_amount = int(receipt_amount)
+        if dues.exists():
+            for due in dues:
+                if remaining_amount >= due.amount:
+                    # If receipt amount is greater than or equal to due amount, delete the due
+                    remaining_amount -= due.amount
+                    due.delete()
+                else:
+                    # If receipt amount is less than due amount, update due with remaining amount
+                    due.amount -= remaining_amount
+                    due.save()
+                    remaining_amount = 0  # No remaining amount after this due is updated
+                    break
+        else:
+            # Handle the case where there are no dues
+            print("No existing dues to apply the receipt amount.")
+            remaining_amount = 0  # Reset remaining amount as there's nothing to apply it to
+
+        # If there is remaining amount after updating dues, create a new due with the remaining amount
+        if remaining_amount > 0 or due_date:
+            if next_due_amount:
+                remaining_amount += next_due_amount
+            new_due_date = due_date # Set the due date as current date
+            print("next due date printed in the upate_function ",new_due_date)
+            Due.objects.create(invoice=self, amount=remaining_amount, due_date=new_due_date)
+            self.update_dues()
 
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
@@ -54,23 +99,43 @@ class InvoiceItem(models.Model):
 
 
 class Receipt(models.Model):
-    Bill_No = models.CharField(max_length=245 , default=None)
+    Bill_No = models.CharField(max_length=245, default=None)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     amount_paid = models.IntegerField()
     date_paid = models.DateField(default=timezone.now)
     comment = models.CharField(max_length=200, blank=True)
-    received_by = models.ForeignKey(Staff,verbose_name="Billing Staff",on_delete=models.DO_NOTHING)
-    def stats(self):
-        return self.invoice.student.current_status
-    def current_cls(self):
-        return self.invoice.student.course
-    def regno(self):
-        return self.invoice.student.enrol_no
-    def name(self):
-        return self.invoice.student.student_name
+    received_by = models.ForeignKey(Staff, verbose_name="Billing Staff", on_delete=models.DO_NOTHING)
+
     def __str__(self):
         return f"Receipt on {self.date_paid}"
-    
-    
+
+    def save(self, *args, **kwargs):
+            next_due_date = kwargs.pop('next_due_date')
+            next_due_amount = kwargs.pop('next_due_amount')
+            print("from sve method")
+            print("next due amount ",next_due_amount)
+            print("next due date ",next_due_date)
+            super().save(*args, **kwargs)
+            self.invoice.update_dues_based_on_receipt(self.amount_paid, next_due_date, next_due_amount)
+
+class Due(models.Model):
+    invoice = models.ForeignKey(Invoice, related_name='dues', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
+    extended = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
+    def extend_due(self, new_due_date):
+        self.due_date = new_due_date
+        self.extended = True
+        self.save()
+
+    def delete(self, *args, **kwargs):
+        self.invoice.add_past_due(self)
+        super().delete(*args, **kwargs)
+
+    @staticmethod
+    def dues_for_student(student):
+        return Due.objects.filter(invoice__student=student)

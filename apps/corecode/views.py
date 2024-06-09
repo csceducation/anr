@@ -110,6 +110,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
             "total_income":views.total_income,
             "total_paid":views.total_paid(),
             "total_balance":views.total_balance,
+            "pending_dues":views.get_deadline_due(),
         })
 
 
