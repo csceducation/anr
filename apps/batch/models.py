@@ -66,4 +66,16 @@ class BatchModel(models.Model):
                 'name': self.map_name(enrol_no),
                 'status': status
             }
+        #print(doc)
         return doc
+
+    def finished_topics(self):
+        manager = AttendanceManager("anr_collections")
+        doc = manager.get_all_theory_data(self.id)
+        finished = []
+        #print(doc)
+        for data in doc:
+            print(data['content'])
+            finished.extend(data['content'])
+        #print(finished)
+        return finished

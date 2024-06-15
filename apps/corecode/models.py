@@ -48,6 +48,7 @@ class Subject(models.Model):
 
     name = models.CharField(max_length=200, unique=True)
     duration = models.CharField(max_length=200,blank=True)
+    contents = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ["name"]

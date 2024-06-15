@@ -128,7 +128,8 @@ def add_theory_attendance(request,batch_id):
 
     
     if request.method == 'POST':
-        content = request.POST.get('content')
+        #content = request.POST.get('content')
+        content = request.POST.getlist('content')
         entry_time = request.POST.get('entrytime')
         exit_time = request.POST.get('exittime')
         students_present = request.POST.getlist('students')
@@ -138,8 +139,12 @@ def add_theory_attendance(request,batch_id):
             batch.add_theory_attendance(content,entry_time,exit_time,student.enrol_no,status,date)
         return redirect(request.META.get('HTTP_REFERER', '/'))
     existing_data = batch.get_attendance_data(date)
-
-    return render(request,"theory_attendance_form.html",{"data":existing_data,"batch":batch})
+    contents_to_include = batch.batch_course.contents
+    contents_list = contents_to_include.splitlines()
+    removed = list(set(contents_list)-set(batch.finished_topics()))
+    
+    
+    return render(request,"theory_attendance_form.html",{"data":existing_data,"batch":batch,"contents":removed})
 
 
 def delete_theory_attendance(request,**kwargs):
@@ -399,7 +404,7 @@ def theory_dashboard(request):
     staff_list = [{"id":s.id,"name":s.username} for s in staffs]
     if not staff_id:
         return render(request,'theory_dashboard_form.html',{'staff_list':staff_list})
-    batch_id = request.GET.get("batch_id")
+    batch_id = request.GET.get("batch")
     date = request.GET.get("date")
     staff = Staff.objects.get(id=int(staff_id))
     

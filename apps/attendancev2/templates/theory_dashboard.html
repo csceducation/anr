@@ -54,6 +54,27 @@
     </table>
 </div>
 <hr class="my-5">
+
+
+<form id="batch-date-form" class="form-inline">
+    <div class="form-group mr-2">
+        <label for="batch-select" class="mr-2">Select Batch:</label>
+        <select id="batch-select" name="batch" class="form-control selectpicker mr-2" data-live-search="true">
+            <option value="">Select Batch</option>
+            <!-- Assume batch_list is a Django variable containing a list of batches -->
+            {% for batch in batch_list %}
+                <option value="{{ batch.id }}">{{ batch.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group mr-2">
+        <label for="date-input" class="mr-2">Select Date:</label>
+        <input type="date" id="date-input" name="date" class="form-control mr-2">
+    </div>
+    <button type="submit" class="btn btn-primary">Select</button>
+</form>
+
+<hr class="my-5">
 {% if specific_date %}
 <div class="container">
     <h2 style="font-family: Arial, sans-serif; font-size: 24px; font-weight: bold;">Data Table</h2>
@@ -94,23 +115,7 @@
 
 {% endif %}
 
-<form id="batch-date-form" class="form-inline">
-    <div class="form-group mr-2">
-        <label for="batch-select" class="mr-2">Select Batch:</label>
-        <select id="batch-select" name="batch" class="form-control selectpicker mr-2" data-live-search="true">
-            <option value="">Select Batch</option>
-            <!-- Assume batch_list is a Django variable containing a list of batches -->
-            {% for batch in batch_list %}
-                <option value="{{ batch.id }}">{{ batch.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group mr-2">
-        <label for="date-input" class="mr-2">Select Date:</label>
-        <input type="date" id="date-input" name="date" class="form-control mr-2">
-    </div>
-    <button type="submit" class="btn btn-primary">Select</button>
-</form>
+
 
 <script>
         var form = document.getElementById("batch-date-form");

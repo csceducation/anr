@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{{contents}}
 <div class="container">
     <div class="row">
         <div class="col-8">
@@ -19,8 +20,11 @@
       <input type="hidden" name="batch_id" value="{{ batch_id }}">
       <input type="hidden" name="date" value="{{ date }}">
       <div class="mb-3">
-        <label for="content" class="form-label">Content</label>
-        <textarea class="form-control" id="content" name="content" rows="3">{{ data.content }}</textarea>
+        <label for="content" class="form-label">Topics covered today</label><br>
+        {% for choice in contents %}
+          <input type="checkbox" id="choice_{{ forloop.counter }}" name="content" value="{{ choice }}">
+          <label for="choice_{{ forloop.counter }}">{{ choice }}</label><br>
+        {% endfor %}
       </div>
       <div class="row mb-3">
         <div class="col">

@@ -43,7 +43,7 @@ class SubjectForm(ModelForm):
 
     class Meta:
         model = Subject
-        fields = ["name",'duration']
+        fields = ["name",'duration',"contents"]
 class BookForm(ModelForm):
     prefix = "Book"
 

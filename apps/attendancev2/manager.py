@@ -205,8 +205,13 @@ class AttendanceManager:
                 "end_time": doc["data"][str(student_id)]["stop"]
             }
             formatted_data.append(formatted_doc)
-        print(formatted_data)
+        #print(formatted_data)
         return formatted_data
+    
+    def get_all_theory_data(self,batch_id):
+        documents = self.theory_collection.find({"batch_id": batch_id})
+        #print(documents)
+        return documents
         
 
 
