@@ -816,6 +816,38 @@ p{
                     </tbody>
                 </table>
             </div>
+            <div class="timetable" id="timetable">
+                <div>
+                    <span id="prevDay">&lt;</span>
+                    <h2>Due Payments 
+                    </h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+      
+                            <th>Amount Payable</th>
+          
+                            <th>Last Date</th>
+          
+                          </tr>
+                    </thead>
+                    <tbody>
+                        {% for due in dues %}
+      
+                      <tr>
+      
+                        <td>{{due.amount}}</td>
+      
+                        <td>{{due.due_date}}</td>
+      
+                      </tr>
+      
+                    {% endfor %}
+      
+                    </tbody>
+                </table>
+            </div>
         </main>
 
         <!-- <div class="right">

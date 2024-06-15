@@ -111,9 +111,13 @@
                             <div class="form-group mx-sm-3 mb-2">
                                 <label for="newDueDate" class="sr-only">New Due Date</label>
                                 <input type="date" class="form-control" id="newDueDate" name="new_due_date" required>
+                                <button type="submit" class="btn btn-warning m-2">Extend</button>
+                                <a href="/finance/bill/?due={{due.id}}" class="m-2 btn btn-info">Pay now
+                                </a>
                             </div>
-                            <button type="submit" class="btn btn-warning mb-2">Extend</button>
+                            
                         </form>
+                        
                     </div>
                 </div>
             </div>

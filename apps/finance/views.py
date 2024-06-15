@@ -44,7 +44,6 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 def save_bill_details(request):
-    due = request.GET.get('due',None)
     last_receipt = Receipt.objects.last()
     if request.method == 'POST':
         student = request.POST.get('student')
@@ -97,8 +96,11 @@ def save_bill_details(request):
        
         return redirect('bill')
 
-    
-    return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"Due":Due})
+    try:
+        due = Due.objects.get(id = request.GET.get('due',None))
+        return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"due":due})
+    except:
+        return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"due":"None"})
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):
     model = Invoice

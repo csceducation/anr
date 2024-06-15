@@ -29,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 from ..finance.models import Invoice,InvoiceItem
 from django.views.generic import DetailView
-from apps.finance.models import Invoice
+from apps.finance.models import Invoice,Due
 from ..enquiry.models import *
 from .models import Student, StudentBulkUpload,Bookmodel,Classmodel,Exammodel,Certificatemodel
 from django.utils.decorators import method_decorator
@@ -596,6 +596,7 @@ class PublicView(PublicAccessMixin,DetailView):
         context["classlog"] = Classmodel.objects.filter(student=self.object)
         context["examlog"] = Exammodel.objects.filter(student=self.object)
         context["certilog"] = Certificatemodel.objects.filter(student=self.object)
+        context["dues"] = Due.objects.filter(invoice__student=self.object)
         return context
     
     

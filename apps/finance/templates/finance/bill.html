@@ -2,7 +2,6 @@
 {% load humanize %}
 
 {% block content %}
-
 <div class="container mt-3">
   <div class="col-sm-8 mx-auto">
     <table class="table table-sm table-bordered">
@@ -31,12 +30,19 @@
       {% csrf_token %}
       <div class="form-group">
         <label for="student">Studnet:</label>
+        {% if  due == "None" %}
         <input type="text" name="student" id="student" class="form-control" required list="enquiry-list"  autocomplete="off">
-        <datalist id="enquiry-list">
+          <datalist id="enquiry-list">
             {% for enquiry in stu %}
               <option value="{{ enquiry.student_name }}({{enquiry.enrol_no}}) {{ enquiry.id }}"></option>
             {% endfor %}
           </datalist>
+        {% else %}
+        <input type="text" name="student" id="student" class="form-control" required list="enquiry-list" value="{{ due.invoice.student.student_name}}({{due.invoice.student.enrol_no}}) {{ due.invoice.student.id }}"  autocomplete="off">
+          <datalist id="enquiry-list">
+            <option value="{{ due.invoice.student.student_name}}({{due.invoice.student.enrol_no}}) {{ due.invoice.student.id }}"></option>
+          </datalist>
+        {% endif %}
       </div> 
 
       <div class="form-group">
@@ -51,7 +57,7 @@
   
       <div class="form-group">
         <label for="amount">Amount:</label>
-        <input type="number" name="amount" id="amount" class="form-control" required>
+        <input type="number" name="amount" id="amount" class="form-control" value="{{due.amount}}" required>
       </div>
 
       <div class="form-group">
@@ -184,6 +190,20 @@ dueElement.innerHTML = `
         })
         .catch(error => console.error('Error fetching student dues:', error));
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  var dueDateStr = '{{ due.due_date }}'; 
+  
+  if (dueDateStr) {
+    var dueDateObj = new Date(dueDateStr); 
+    var formattedDate = dueDateObj.toISOString().slice(0, 10); 
+    
+    document.getElementById('bill_date').value = formattedDate;
+  }
+});
+
+
+
 </script>
 
 {% endblock content %}
