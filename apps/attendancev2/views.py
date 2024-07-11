@@ -141,7 +141,7 @@ def add_theory_attendance(request,batch_id):
     existing_data = batch.get_attendance_data(date)
     contents_to_include = batch.batch_course.contents
     contents_list = contents_to_include.splitlines()
-    removed = list(set(contents_list)-set(batch.finished_topics()))
+    removed = sorted(list(set(contents_list)-set(batch.finished_topics())))
     
     
     return render(request,"theory_attendance_form.html",{"data":existing_data,"batch":batch,"contents":removed})

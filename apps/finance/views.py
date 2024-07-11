@@ -46,6 +46,7 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
 def save_bill_details(request):
     last_receipt = Receipt.objects.last()
     if request.method == 'POST':
+        due = None
         student = request.POST.get('student')
         bill_number = request.POST.get('bill_number')
         bill_date = request.POST.get('bill_date')
@@ -59,6 +60,7 @@ def save_bill_details(request):
             next_due_amount = int(next_due_amount)
         if due_id:
             print("due id",due_id)   
+            due = Due.objects.get(id=due_id)
         else:
             print("not found")
         print("staff id gotten: ",re_by)

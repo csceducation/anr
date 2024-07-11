@@ -46,7 +46,7 @@ class Staff(models.Model):
     address2 = models.CharField("Address Line 3", max_length=255,default=None,blank=True,null=True)
     taluka = models.CharField("Taluk",max_length=255,null=True,default=None,blank=True)
     district = models.CharField("District",max_length=255,default="",blank=True)
-    pincode = models.IntegerField("Pincode", blank=True, default=None)
+    pincode = models.IntegerField("Pincode", blank=False, default=None)
     passport = models.ImageField("Photo",blank=True, upload_to="staff/certificates/")
     aadhar_card = models.ImageField("Aadhar Card",blank=True, upload_to="staff/certificates/")
     degree_certificate = models.ImageField("Degree Certificate",blank=True, upload_to="staff/certificates/")

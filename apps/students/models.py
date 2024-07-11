@@ -34,11 +34,11 @@ class Student(models.Model):
     rel_name = models.CharField(
                 default=None, max_length=255, verbose_name="Father/Husband Name"
             )
-    rel_occupation = models.CharField("Father/Husband Occupation",max_length=255,default=None,null=False)
+    rel_occupation = models.CharField("Father/Husband Occupation",max_length=255,default=None,null=False,blank=False)
     date_of_birth = models.DateField(
                 default=timezone.now, verbose_name="Date of Birth"
             )
-    age = models.IntegerField("Age",default=0,blank=True)
+    age = models.IntegerField("Age",default=0,blank=False)
     gender = models.CharField("Gender", max_length=10, choices=GENDER_CHOICES, default="male")
     
     religion = models.CharField("Religion",max_length=554,default="Hindu",choices=RELIGION_CHOICE)
