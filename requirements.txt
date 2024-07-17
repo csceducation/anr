@@ -23,5 +23,4 @@ tomli
 pymongo
 plotly
 pandas
-django-heroku
 gunicorn
