@@ -108,6 +108,13 @@ def delete_lab_attendance_data(request,**kwargs):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
+def get_key(key,val,finished):
+    for value in finished:
+        if val == value:
+            return True
+        else:
+            False
+
 def add_theory_attendance(request,batch_id):
     batch = BatchModel.objects.get(id=batch_id)
     
@@ -139,12 +146,18 @@ def add_theory_attendance(request,batch_id):
             batch.add_theory_attendance(content,entry_time,exit_time,student.enrol_no,status,date)
         return redirect(request.META.get('HTTP_REFERER', '/'))
     existing_data = batch.get_attendance_data(date)
+    """
+    #for the previous without day contents
     contents_to_include = batch.batch_course.contents
     contents_list = contents_to_include.splitlines()
     removed = sorted(list(set(contents_list)-set(batch.finished_topics())))
-    
-    
-    return render(request,"theory_attendance_form.html",{"data":existing_data,"batch":batch,"contents":removed})
+    """
+    contents = batch.batch_course.get_day_contents()
+    #print(contents)
+    finished_topics = batch.finished_topics()
+    removed = [key  for key, value in contents.items() if get_key(key,value,finished_topics)  ]
+    print(removed)
+    return render(request,"theory_attendance_form.html",{"data":existing_data,"batch":batch,"contents":removed,"org_contents":contents})
 
 
 def delete_theory_attendance(request,**kwargs):
@@ -415,13 +428,16 @@ def theory_dashboard(request):
     for batch in batches:
         data = manager.get_theory_dashboard(batch.id)
         result[batch.get_batch_name()] = data
+    
+        
     all_batches = BatchModel.objects.all()
     batch_list = [{"id":b.id,'name':b.get_batch_name()} for b in batches]
     context = {
         "data_for_staff":result,
         "staff_list":staff_list,
-        "batch_list":batch_list
+        "batch_list":batch_list,
     }
+    #print(context)
     if batch_id and date:
         
         doc = manager.get_theory_data(int(batch_id),date)

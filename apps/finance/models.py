@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from apps.staffs.models import Staff
-from apps.corecode.models import AcademicSession, AcademicTerm, StudentClass
+from apps.corecode.models import AcademicSession, AcademicTerm, StudentClass,Bill
 from apps.students.models import Student
 import json
 from datetime import date
@@ -99,6 +99,7 @@ class InvoiceItem(models.Model):
 
 
 class Receipt(models.Model):
+    
     Bill_No = models.CharField(max_length=245, default=None)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     amount_paid = models.IntegerField()
@@ -110,13 +111,22 @@ class Receipt(models.Model):
         return f"Receipt on {self.date_paid}"
 
     def save(self, *args, **kwargs):
+            bill = Bill.objects.filter().first()
+            if self.Bill_No.startswith(bill.prefix):
+                bill.last_bill = (self.Bill_No[len(bill.prefix):])
+                
+                bill.save()
+                
             next_due_date = kwargs.pop('next_due_date')
             next_due_amount = kwargs.pop('next_due_amount')
-            print("from sve method")
-            print("next due amount ",next_due_amount)
-            print("next due date ",next_due_date)
+            
             super().save(*args, **kwargs)
             self.invoice.update_dues_based_on_receipt(self.amount_paid, next_due_date, next_due_amount)
+            
+    
+    @property
+    def get_last_bill(self,Bill):
+        bill = Bill.objects.filter().first()
 
 class Due(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='dues', on_delete=models.CASCADE)

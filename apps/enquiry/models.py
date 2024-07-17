@@ -54,7 +54,7 @@ class Enquiry(models.Model):
     )
     mobile_number = models.CharField("Mobile Number",
         validators=[mobile_num_regex], max_length=13, blank=True , null=True
-    )
+    )#null = False 
     alternate_mobile_number = models.CharField("Alternate Mobile Number",
         validators=[mobile_num_regex], max_length=13, blank=True , null=True
     )
@@ -161,6 +161,10 @@ class Enquiry(models.Model):
         formatted_date = dob.strftime('%d%m%Y')
 
         return formatted_date
+    
+    
+        
+        
 
         
 class Enquirylogs(models.Model):

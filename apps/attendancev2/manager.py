@@ -1,5 +1,6 @@
 import pymongo
 import datetime
+
 class AttendanceManager:
     def __init__(self,mongodb_database):
         self.db_name = mongodb_database
@@ -155,7 +156,7 @@ class AttendanceManager:
     def get_theory_dashboard(self,batch_id):
         # Fetch documents from MongoDB
         documents = self.theory_collection.find({"batch_id": batch_id})
-        print(documents)
+        #print(documents)
         # Initialize dictionary to store data
         batch_data = {}
 
@@ -180,7 +181,7 @@ class AttendanceManager:
                     "total_present": total_present,
                     "total_absent": total_absent
                 }
-
+        #print(batch_data)
         return batch_data
     
     """here the student id is students enroll number it suits for all documents wedont use model id in documents"""

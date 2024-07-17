@@ -49,6 +49,14 @@ class Subject(models.Model):
     name = models.CharField(max_length=200, unique=True)
     duration = models.CharField(max_length=200,blank=True)
     contents = models.TextField(blank=True, null=True)
+    
+    def get_day_contents(self):
+        cont_list = self.contents.splitlines()
+        contents = {}
+        for i in range(len(cont_list)):
+            contents[f"day-{i+1}"]  = cont_list[i]
+        #print(contents)
+        return contents
 
     class Meta:
         ordering = ["name"]
@@ -100,3 +108,8 @@ class StudentClass(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Bill(models.Model):
+    prefix = models.CharField(max_length=45,blank=False, null=False)
+    last_bill = models.IntegerField(blank=False, null=False)

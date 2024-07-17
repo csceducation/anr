@@ -25,6 +25,7 @@
             <tr>
                 <th>Batch</th>
                 <th>Date</th>
+                <th>Day </th>
                 <th>Content</th>
                 <th>Total Count</th>
                 <th>Total Present</th>
@@ -34,6 +35,7 @@
         <tbody>
             {% for batch, dates in data_for_staff.items %}
                 {% for date, data in dates.items %}
+                
                     <tr>
                         {% if forloop.first %}
                             <td rowspan="{{ dates|length }}">{{ batch }}</td>

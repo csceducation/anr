@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import logout
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic import DetailView
 from functools import wraps
 from django.utils.decorators import method_decorator
 from ..revenue import views
@@ -28,7 +29,7 @@ from .models import (
     SiteConfig,
     StudentClass,
     Subject,
-    Book,Exam,Time
+    Book,Exam,Time,Bill
 )
 
 
@@ -306,7 +307,7 @@ class SubjectCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class SubjectUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Subject
-    fields = ["name","contents"]
+    fields = ["name","duration","contents"]
     success_url = reverse_lazy("subjects")
     success_message = "Subject successfully updated."
     template_name = "corecode/mgt_form.html"
@@ -458,6 +459,24 @@ class CurrentSessionAndTermView(LoginRequiredMixin, View):
             AcademicTerm.objects.filter(name=term).update(current=True)
 
         return render(request, self.template_name, {"form": form})
+
+
+class BillDetailView(DetailView):
+    model = Bill
+    template_name = 'bill_detail.html'
+    context_object_name = 'bill'
+
+    def get_object(self):
+        return Bill.objects.first()
+
+class BillUpdateView(UpdateView):
+    model = Bill
+    template_name = 'bill_form.html'
+    fields = ['prefix', 'last_bill']
+    success_url = reverse_lazy('bill-detail')
+
+    def get_object(self):
+        return Bill.objects.first()
 
 
 

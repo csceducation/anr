@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+
+
 {% block content %}
 <div class="container">
     <div class="row">
@@ -20,14 +22,16 @@
       <input type="hidden" name="date" value="{{ date }}">
       <div class="mb-3">
         <label for="content" class="form-label">Topics covered today</label><br>
+        
         <div class="row">
-          {% for choice in contents %}
+          {% for key,choice in org_contents.items %}
             <div class="col-md-4">
-              <input type="checkbox" id="choice_{{ forloop.counter }}" name="content" value="{{ choice }}">
-              <label for="choice_{{ forloop.counter }}">{{ choice }}</label>
+              <input type="checkbox" id="choice_{{ forloop.counter }}" name="content" value="{{ choice }}" {% if key in contents %} disabled {% endif %}>
+              <label for="choice_{{ forloop.counter }}" >{{key}} : {{ choice }} </label>
             </div>
           {% endfor %}
         </div>
+        
       </div>
       <div class="row mb-3">
         <div class="col">

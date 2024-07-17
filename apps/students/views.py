@@ -38,6 +38,7 @@ from django.contrib.auth.decorators import login_required
 from apps.batch.models import BatchModel
 from apps.attendancev2.dashboard import DashboardManager
 from apps.attendancev2.manager import AttendanceManager
+from django.core.serializers import serialize
 
 def generate_student_id_card(request,student_id):
         # Create a blank image
@@ -193,6 +194,7 @@ class StudentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         # Stage 1: Select Enquiry
         if 'enquiry_id' not in kwargs:
             enquiries = Enquiry.objects.all()
+            
             return render(request, 'students/ad_con.html', {'enquiries': enquiries})
 
         # Stage 2: Add Student Information

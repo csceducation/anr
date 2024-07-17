@@ -14,6 +14,8 @@ from .forms import InvoiceItemFormset, InvoiceReceiptFormSet, Invoices
 from .models import Invoice, InvoiceItem, Receipt, Due
 
 from apps.corecode.views import staff_student_entry_restricted
+from apps.corecode.models import Bill
+
 class InvoiceListView(LoginRequiredMixin, ListView):
     model = Invoice
 
@@ -44,7 +46,9 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 def save_bill_details(request):
+    bill = Bill.objects.get(id=1)
     last_receipt = Receipt.objects.last()
+    #print(last_receipt.Bill_No)
     if request.method == 'POST':
         due = None
         student = request.POST.get('student')
@@ -100,9 +104,9 @@ def save_bill_details(request):
 
     try:
         due = Due.objects.get(id = request.GET.get('due',None))
-        return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"due":due})
+        return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"bill":bill,"next_no":bill.last_bill+1,"due":due})
     except:
-        return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"due":"None"})
+        return render(request, 'finance/bill.html',context={'stu':Student.objects.all(),'last_receipt':last_receipt,"bill":bill,"next_no":bill.last_bill+1,"due":"None"})
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):
     model = Invoice

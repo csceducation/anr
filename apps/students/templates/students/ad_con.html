@@ -15,7 +15,7 @@
     <input type="text" name="enquiry" id="enquiry" class="form-control" list="enquiry-list"  autocomplete="off"/>
     <datalist id="enquiry-list">
       {% for enquiry in enquiries %}
-        <option value="{{ enquiry.name }}({{enquiry.enquiry_no}}) {{ enquiry.auto_increment }}"></option>
+        <option value="{{ enquiry.name }}({{enquiry.enquiry_no}}) {{ enquiry.auto_increment }} {{enquiry.mobile_number}}"></option>
       {% endfor %}
     </datalist>
 
@@ -31,12 +31,12 @@ document.getElementById('enquiry').value + '"]');
     if (selectedOption) {
       var inputText = 
 document.getElementById('enquiry').value;
-      var match = inputText.match(/\d+$/);
+      var match = inputText.match(/\) (\d+)/);
       
       if (match) {
-      var lastNumbers = match[0];
+      var lastNumbers = match[1];
       
-document.getElementById('enquiry').value = lastNumbers;
+document.getElementById('enquiry').value = lastNumbers;//lastNumbers;
       } else {
       console.log("No numbers found at the end of the text");
       } 

@@ -33,7 +33,9 @@ from .views import (
     TimeDeleteView,
     TimeListView,
     TimeUpdateView,
-    redirector
+    redirector,
+    BillDetailView,
+    BillUpdateView
 )
 
 urlpatterns = [
@@ -111,4 +113,6 @@ urlpatterns = [
         name="timedelete",
     ),
     path("redirector/",redirector,name="redirector"),
+    path('bill/', BillDetailView.as_view(), name='bill-detail'),
+    path('bill/edit/', BillUpdateView.as_view(), name='bill-update'),
 ]
