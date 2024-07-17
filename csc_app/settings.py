@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import pymysql
-import django_heroku
 
 pymysql.version_info = (1,4,6,'final',0)
 pymysql.install_as_MySQLdb()
@@ -210,4 +209,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Site Default values
 AUTH_USER_MODEL = 'corecode.User'
-django_heroku.settings(locals())
