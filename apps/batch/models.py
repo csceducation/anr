@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.urls import reverse
 from apps.corecode.models import Time
 from apps.attendancev2.manager import AttendanceManager
+from csc_app.settings import db
 
 class BatchModel(models.Model):
     batch_status = models.CharField("Batch Status", max_length=255, choices=[("Active", "Active"), ("Inactive", "Inactive")])
@@ -39,7 +40,7 @@ class BatchModel(models.Model):
         ordering = ["-batch_start_date"]
 
     def initialize_batch_attendance(self, date, content, entry_time, exit_time):
-        manager = AttendanceManager("anr_collections")
+        manager = AttendanceManager(db)
         manager.initialize_batch(self.id, date, content, entry_time, exit_time, self.get_students())
 
     def get_students(self):
@@ -54,12 +55,12 @@ class BatchModel(models.Model):
         return student.student_name
 
     def add_theory_attendance(self, content,entry_time,exit_time,student, status, date):
-        manager = AttendanceManager("anr_collections")
+        manager = AttendanceManager(db)
         manager.add_theory_attendance(self.id, student, date, status,content,entry_time,exit_time)
         
     
     def get_attendance_data(self, date):
-        manager = AttendanceManager("anr_collections")
+        manager = AttendanceManager(db)
         doc = manager.get_theory_data(self.id, date)
         for enrol_no, status in doc['students'].items():
             doc['students'][enrol_no] = {
@@ -70,7 +71,7 @@ class BatchModel(models.Model):
         return doc
 
     def finished_topics(self):
-        manager = AttendanceManager("anr_collections")
+        manager = AttendanceManager(db)
         doc = manager.get_all_theory_data(self.id)
         finished = []
         #print(doc)

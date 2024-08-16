@@ -11,7 +11,7 @@ from datetime import datetime,timedelta
 import plotly.express as px
 from apps.batch.models import BatchModel
 from .froms import DateForm
-db = "anr_collections"
+from csc_app.settings import db
 
 def create_labs(request):
     if request.method == "POST":

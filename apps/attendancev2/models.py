@@ -1,6 +1,7 @@
 from django.db import models
 from .manager import AttendanceManager
 from datetime import datetime
+from csc_app.settings import db
 
 class LabSystemModel(models.Model):
     lab_no = models.CharField(max_length=200,blank=True, null=True)
@@ -29,7 +30,7 @@ class LabSystemModel(models.Model):
         self.save()
 
     def get_attendance_data(self,date):
-        manager = AttendanceManager("anr_collections")
+        manager = AttendanceManager(db)
         result = {}
         for system in self.get_systems():
             result[system] = manager.get_lab_data(self.id,system,date)

@@ -35,6 +35,9 @@ class Student(models.Model):
                 default=None, max_length=255, verbose_name="Father/Husband Name"
             )
     rel_occupation = models.CharField("Father/Husband Occupation",max_length=255,default=None,null=False,blank=False)
+    m_name = models.CharField(
+                default="", max_length=255, verbose_name="Mother Name",null=True
+            )
     date_of_birth = models.DateField(
                 default=timezone.now, verbose_name="Date of Birth"
             )

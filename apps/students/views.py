@@ -39,7 +39,7 @@ from apps.batch.models import BatchModel
 from apps.attendancev2.dashboard import DashboardManager
 from apps.attendancev2.manager import AttendanceManager
 from django.core.serializers import serialize
-
+from csc_app.settings import db
 def generate_student_id_card(request,student_id):
         # Create a blank image
     image = Image.new('RGB', (1000, 900), (255, 255, 255))
@@ -247,6 +247,7 @@ class StudentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
                 form.initial['address1'] = enquiry_instance.address1
                 form.initial['address2'] = enquiry_instance.address2
                 form.initial['rel_name'] = enquiry_instance.f_name
+                form.initial['m_name'] = enquiry_instance.m_name
                 form.initial['date_of_birth'] = enquiry_instance.date_of_birth
                 form.initial['age'] = enquiry_instance.age
                 form.initial['gender'] = enquiry_instance.gender
@@ -606,8 +607,8 @@ def attendance_test(request,**kwargs):
     student_id = kwargs.get('pk')
     student = Student.objects.get(id=student_id)
     batches = BatchModel.objects.filter(batch_students__id=student.id)
-    manager = DashboardManager('anr_collections')
-    lab_manager = AttendanceManager("anr_collections")
+    manager = DashboardManager(db)
+    lab_manager = AttendanceManager(db)
     lab_data = lab_manager.get_public_student_lab_data(student.enrol_no)
     data = {}
     for batch in batches:

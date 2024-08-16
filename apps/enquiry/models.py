@@ -43,6 +43,7 @@ class Enquiry(models.Model):
     enquiry_no = models.CharField("Enquiry Number", max_length=20, unique=True, editable=False)
     name = models.CharField("Name", max_length=255, blank=False, default="")
     f_name = models.CharField("Father Name", max_length=255, blank=False, default="")
+    m_name = models.CharField("Mother Name", max_length=255, blank=False, default="")
     address = models.CharField("Address", max_length=255,default=None,blank=False)
     address1 = models.CharField("Address Line 2", max_length=255,default=None,blank=True,null=True)
     address2 = models.CharField("Address Line 3", max_length=255,default=None,blank=True,null=True)
@@ -74,10 +75,10 @@ class Enquiry(models.Model):
         "Enquiry Status", choices=ENQUIRY_STATUS_CHOICES, max_length=1024, default="Following"
     )
     expected_date = models.DateField("Expected Date of Join",default=timezone.now)
-    # Others
-    qualification = models.TextField("Qualification", blank=True, default="",null=True)
+    # Otherse
+    qualification = models.TextField("Qualification", blank=False, default="",null=False)
     qualification_status = models.CharField(
-        "Qualification Status", max_length=50, choices=QUALIFICATION_STATUS_CHOICES, default="Completed"
+        "Qualification Status", max_length=50, choices=QUALIFICATION_STATUS_CHOICES, default="Completed",blank =True,null=True
     )
     studying_year = models.IntegerField("Current year",default=None,null=True,blank=True)
     studying_course = models.TextField("Major", max_length=255, default="",blank=True)
